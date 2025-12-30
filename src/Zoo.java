@@ -1,26 +1,37 @@
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 public class Zoo {
     private String city;
-    private int animalCount;
+    private List<Animal> animals; // Наш Data Pool
 
-    public Zoo(String city, int animalCount) {
+    public Zoo(String city) {
         this.city = city;
-        this.animalCount = animalCount;
+        this.animals = new ArrayList<>();
     }
 
-    public String getCity() {
-        return city;
+    public void addAnimal(Animal a) {
+        animals.add(a);
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void sortByAge() {
+        animals.sort(Comparator.comparingInt(Animal::getAge));
     }
 
-    public int getAnimalCount() {
-        return animalCount;
+    public void printOnlyTigers() {
+        System.out.println("\n--- Searching for Tigers in " + city + " ---");
+        for (Animal a : animals) {
+            if (a.getSpecies().equalsIgnoreCase("Tiger")) {
+                System.out.println(a);
+            }
+        }
     }
 
-    public void setAnimalCount(int animalCount) {
-        this.animalCount = animalCount;
+    public void printAll() {
+        System.out.println("\nAll animals in " + city + ":");
+        for (Animal a : animals) {
+            System.out.println(a);
+        }
     }
-
 }
