@@ -4,15 +4,18 @@ import java.util.List;
 
 public class Zoo {
     private String city;
-    private List<Animal> animals; // Наш Data Pool
+    private List<Animal> animals;
 
     public Zoo(String city) {
         this.city = city;
         this.animals = new ArrayList<>();
     }
 
-    public void addAnimal(Animal a) {
-        animals.add(a);
+    public void addAnimal(Animal a) { animals.add(a); }
+
+    // Новый метод: заменяет список животных теми, что пришли из БД
+    public void setAnimals(List<Animal> animalsFromDb) {
+        this.animals = animalsFromDb;
     }
 
     public void sortByAge() {

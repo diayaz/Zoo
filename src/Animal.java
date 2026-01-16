@@ -12,6 +12,11 @@ public class Animal extends Creature {
         return species;
     }
 
+
+    public String getType() {
+        return type;
+    }
+
     @Override
     public String toString() {
         return super.toString() + " | Species: " + species + " | Type: " + type;
