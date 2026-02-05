@@ -8,26 +8,37 @@ public class DatabaseManager {
     private final String password = "Diasik228";
 
     private Connection connect() throws SQLException {
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         return DriverManager.getConnection(url, user, password);
     }
 
+
+    public void deleteAllAnimals() {
+        try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate("DELETE FROM animals");
+            System.out.println("Animals table cleared.");
+        } catch (SQLException e) { e.printStackTrace(); }
+    }
+
     public void addAnimal(Animal a) {
-        String sql = "INSERT INTO animals (name, species, animal_type, age) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO animals (name, age, species, animal_type) VALUES (?, ?, ?, ?)";
         try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, a.getName());
-            pstmt.setString(2, a.getSpecies());
-            pstmt.setString(3, a.getType());
-            pstmt.setInt(4, a.getAge());
+            pstmt.setInt(2, a.getAge());
+            pstmt.setString(3, a.getSpecies());
+            pstmt.setString(4, a.getType());
             pstmt.executeUpdate();
+            System.out.println("Animal saved: " + a.getName());
         } catch (SQLException e) { e.printStackTrace(); }
     }
 
-    // ЧТЕНИЕ + СОРТИРОВКА (теперь с направлением: ASC или DESC)
-    public List<Animal> getAnimalsSorted(String orderBy, String direction) {
+    public List<Animal> getAllAnimals() {
         List<Animal> list = new ArrayList<>();
-        // SQL: ORDER BY age ASC (от малого) или DESC (от большого)
-        String sql = "SELECT * FROM animals ORDER BY " + orderBy + " " + direction;
-        try (Connection conn = connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+        try (Connection conn = connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT * FROM animals")) {
             while (rs.next()) {
                 list.add(new Animal(rs.getString("name"), rs.getString("species"), rs.getString("animal_type"), rs.getInt("age")));
             }
@@ -35,34 +46,22 @@ public class DatabaseManager {
         return list;
     }
 
-    // ФИЛЬТРАЦИЯ ПО ВИДУ (Search by Species)
-    public List<Animal> getAnimalsBySpecies(String speciesName) {
-        List<Animal> list = new ArrayList<>();
-        String sql = "SELECT * FROM animals WHERE LOWER(species) = LOWER(?)";
-        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, speciesName);
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                list.add(new Animal(rs.getString("name"), rs.getString("species"), rs.getString("animal_type"), rs.getInt("age")));
-            }
-        } catch (SQLException e) { e.printStackTrace(); }
-        return list;
-    }
 
-    public void updateAnimalAge(String name, int newAge) {
-        String sql = "UPDATE animals SET age = ? WHERE name = ?";
-        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, newAge);
-            pstmt.setString(2, name);
-            pstmt.executeUpdate();
+    public void deleteAllZooKeepers() {
+        try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate("DELETE FROM zookeepers");
+            System.out.println("ZooKeepers table cleared.");
         } catch (SQLException e) { e.printStackTrace(); }
     }
 
-    public void deleteAnimal(String name) {
-        String sql = "DELETE FROM animals WHERE name = ?";
+    public void addZooKeeper(ZooKeeper k) {
+        String sql = "INSERT INTO zookeepers (name, age, gender) VALUES (?, ?, ?)";
         try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, name);
+            pstmt.setString(1, k.getName());
+            pstmt.setInt(2, k.getAge());
+            pstmt.setString(3, k.getGender());
             pstmt.executeUpdate();
+            System.out.println("ZooKeeper saved: " + k.getName());
         } catch (SQLException e) { e.printStackTrace(); }
     }
 }
